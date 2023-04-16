@@ -52,12 +52,12 @@ class TransformIterator {
 class ArrayTransform {
   _iterator;
   _result;
-  _skippedElementIndexes;
+  _lastDiscarded;
 
   constructor(arr) {
     this._iterator = new TransformIterator(arr);
     this._result = [];
-    this._skippedElementIndexes = [];
+    this._lastDiscarded = -1;
   }
 
   transform() {
@@ -97,12 +97,12 @@ class ArrayTransform {
     if(!this._iterator.hasMore())
       return;
     const { index } = this._iterator.getNext();
-    this._skippedElementIndexes.push(index);
+    this._lastDiscarded = index;
   }
 
   discardPrev() {
     const {element, index} = this._iterator.getPrev();
-    if(!element || this._skippedElementIndexes.indexOf(index) >= 0)
+    if(!element || this._lastDiscarded === index)
       return;
 
     this._result.pop();
@@ -116,7 +116,7 @@ class ArrayTransform {
 
   doublePrev() {
     const {element, index} = this._iterator.getPrev();
-    if(!element || this._skippedElementIndexes.indexOf(index) >= 0)
+    if(!element ||  this._lastDiscarded === index)
       return;
 
     this._result.push(element);
